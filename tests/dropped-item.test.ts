@@ -1,0 +1,2 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {DroppedItem} from '../src/entities/DroppedItem.ts';import {ITEMS} from '../src/data/content.ts';
+test('a slow or interrupted drop is forced onto the floor by one second',()=>{const drop=new DroppedItem('drop-1',ITEMS[0]!,100,10,1);for(let i=0;i<11;i++)drop.update(.1,300,390);assert.equal(drop.settled,true);assert.equal(drop.y,300-drop.radius);assert.equal(drop.vx,0);assert.equal(drop.vy,0)});
