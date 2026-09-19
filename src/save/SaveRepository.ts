@@ -14,6 +14,7 @@ export class SaveRepository {
 
   private migrate(raw: Partial<SaveData>): SaveData {
     const base = createDefaultSave();
+    const isLegacy = (raw.version ?? 0) < 3;
     const rockIndex = Math.max(0, raw.rockIndex ?? 0) % ROCKS.length;
     const maxHp = ROCKS[rockIndex]?.maxHp ?? ROCKS[0]!.maxHp;
     return {
@@ -21,6 +22,12 @@ export class SaveRepository {
       rockHp: Math.max(0, Math.min(raw.rockHp ?? maxHp, maxHp)),
       inventory: raw.inventory ?? {}, upgrades: { ...base.upgrades, ...raw.upgrades },
       settings: { ...base.settings, ...raw.settings },
+      pendingDrops: Array.isArray(raw.pendingDrops) ? raw.pendingDrops.filter((drop) =>
+        typeof drop?.dropId === 'string' && typeof drop.itemId === 'string') : [],
+      rockHits: Math.max(0, raw.rockHits ?? 0),
+      onboarding: isLegacy
+        ? { eligible: false, guaranteedIron: true, guaranteedQuartz: true }
+        : { ...base.onboarding, ...raw.onboarding },
     };
   }
 }

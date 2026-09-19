@@ -2,10 +2,11 @@ import type { RockDefinition } from '../data/types';
 
 export interface RockPose { x: number; y: number; impactX: number; impactY: number; damageRatio: number; breaking: number; entering: number }
 
-const OUTLINE: Array<[number, number]> = [
+const CLAY_OUTLINE: Array<[number, number]> = [
   [-112, 52], [-104, 9], [-91, -39], [-64, -76], [-24, -96], [18, -91], [58, -78], [92, -46],
   [108, -8], [101, 43], [78, 73], [35, 88], [-15, 84], [-59, 79], [-92, 68],
 ];
+const FOSSIL_OUTLINE: Array<[number, number]> = [[-110,58],[-105,5],[-82,-35],[-91,-67],[-48,-91],[3,-84],[43,-96],[91,-61],[102,-18],[113,29],[82,69],[31,84],[-22,80],[-68,91]];
 
 /** Procedural rock skin isolated from game rules so an image/sprite renderer can replace it later. */
 export class RockRenderer {
@@ -20,7 +21,7 @@ export class RockRenderer {
     context.fillStyle = 'rgba(15, 12, 9, .55)';
     context.beginPath(); context.ellipse(5, 87, 116 + breaking * 30, 22 - breaking * 7, 0, 0, Math.PI * 2); context.fill();
 
-    this.path(context);
+    this.path(context, rock.id === 'fossil-rock' ? FOSSIL_OUTLINE : CLAY_OUTLINE);
     const gradient = context.createLinearGradient(-85, -90, 95, 75);
     gradient.addColorStop(0, this.lighten(rock.color, 28));
     gradient.addColorStop(0.43, rock.color);
@@ -38,6 +39,7 @@ export class RockRenderer {
     const pits = [[-65,23,8,4],[-37,-49,5,3],[49,-40,7,4],[63,28,5,3],[-13,49,8,3],[18,-69,4,3]];
     for (const [px,py,rx,ry] of pits) { context.fillStyle = 'rgba(38,30,25,.25)'; context.beginPath(); context.ellipse(px!,py!,rx!,ry!,-.2,0,Math.PI*2); context.fill(); }
     context.fillStyle = 'rgba(205,175,128,.12)'; context.beginPath(); context.arc(-45,-22,13,0,Math.PI*2); context.fill();
+    if (rock.id === 'fossil-rock') this.fossils(context); else this.minerals(context);
 
     this.cracks(context, damageRatio);
     this.chippedEdges(context, damageRatio);
@@ -63,7 +65,9 @@ export class RockRenderer {
     if (ratio <= .25) { context.beginPath(); context.moveTo(76,-63); context.lineTo(91,-46); context.lineTo(69,-37); context.closePath(); context.fill(); }
   }
 
-  private path(context: CanvasRenderingContext2D): void { context.beginPath(); OUTLINE.forEach(([x,y],i)=>i?context.lineTo(x,y):context.moveTo(x,y)); context.closePath(); }
+  private minerals(context:CanvasRenderingContext2D):void { context.fillStyle='#b66b4c';for(const [x,y] of [[-61,-26],[33,-42],[67,18],[-18,58]] as Array<[number,number]>)context.fillRect(x,y,7,5); }
+  private fossils(context:CanvasRenderingContext2D):void { context.strokeStyle='#b9a47b';context.lineWidth=4;context.beginPath();context.arc(-30,6,23,.2,Math.PI*2);context.arc(-30,6,12,.2,Math.PI*2);context.stroke();context.strokeStyle='rgba(220,204,167,.2)';context.lineWidth=3;for(const y of [-45,-27,40,57]){context.beginPath();context.moveTo(-80,y);context.lineTo(76,y+8);context.stroke();} }
+  private path(context: CanvasRenderingContext2D, outline: Array<[number,number]>): void { context.beginPath(); outline.forEach(([x,y],i)=>i?context.lineTo(x,y):context.moveTo(x,y)); context.closePath(); }
   private plane(context: CanvasRenderingContext2D, points: number[][], color: string): void { context.fillStyle=color;context.beginPath();points.forEach(([x,y],i)=>i?context.lineTo(x!,y!):context.moveTo(x!,y!));context.closePath();context.fill(); }
   private lighten(hex: string, amount: number): string { const value=parseInt(hex.slice(1),16);return `rgb(${Math.min(255,(value>>16)+amount)},${Math.min(255,((value>>8)&255)+amount)},${Math.min(255,(value&255)+amount)})`; }
 }

@@ -12,13 +12,13 @@ export const ITEMS: ItemDefinition[] = [
 
 export const ROCKS: RockDefinition[] = [
   { id: 'claystone', name: '赤土の岩塊', subtitle: '第1層・地表近く', maxHp: 12, reward: 18, color: '#796053', shadow: '#433730', drops: ITEMS.slice(0, 5).map((item) => item.id) },
-  { id: 'fossil-rock', name: '化石を抱く岩', subtitle: '第1層・古い堆積層', maxHp: 28, reward: 16, color: '#696257', shadow: '#3d3933', drops: ITEMS.map((item) => item.id) },
+  { id: 'fossil-rock', name: '化石を抱く岩', subtitle: '第1層・古い堆積層', maxHp: 28, reward: 24, color: '#696257', shadow: '#3d3933', drops: ITEMS.map((item) => item.id) },
 ];
 
 export const UPGRADES: UpgradeDefinition[] = [
   { id: 'hammer', name: '地質ハンマー', icon: '⚒', description: '一打の重みを増し、岩へ与えるダメージを上げる。', effectLabel: (level) => `採掘力 ${2 + level * 2} → ${4 + level * 2}`, baseCost: 16, costScale: 1.7, maxLevel: 12 },
   { id: 'chisel', name: '鋼のチゼル', icon: '╱', description: '岩の割れ目を見抜き、途中で素材をこぼす確率を上げる。', effectLabel: (level) => `途中発見率 ${22 + level * 5}% → ${27 + level * 5}%`, baseCost: 28, costScale: 1.72, maxLevel: 10 },
-  { id: 'bag', name: '革のフィールドバッグ', icon: '▣', description: '発見物を安全に持ち帰る。将来の容量機能にも対応。', effectLabel: (level) => `収蔵容量 ${20 + level * 10} → ${30 + level * 10}`, baseCost: 36, costScale: 1.8, maxLevel: 8 },
+  { id: 'bag', name: '革のフィールドバッグ', icon: '▣', description: '発見物を安全に持ち帰る。', effectLabel: (level) => `収蔵容量 ${20 + level * 10} → ${30 + level * 10}`, baseCost: 36, costScale: 1.8, maxLevel: 8 },
 ];
 
 export const itemById = (id: string) => ITEMS.find((item) => item.id === id);
