@@ -2,30 +2,26 @@
 
 ## Product principles
 
-- Build a maintainable, mobile-first collection mining game—not a number-only clicker.
-- Preserve the tactile loop: strike a rock, see finds physically drop and settle, tap to collect them, then review and improve the expedition.
-- Keep gameplay, progression, content data, persistence, effects, and interface concerns separated.
-- Prefer small, complete vertical slices over broad placeholder features.
-- Progress is additive and persistent. Do not introduce broad resets as the default progression model.
+- The game is BREAK THROUGH: a short, one-button incremental breaking game. Core loop: BREAK → break walls in a row → stop just short → upgrade → break through the wall that stopped you.
+- Game feel beats feature count. Do not add movement, aiming, tapping minigames, gacha, dailies, quests or padding.
+- A stop is never a failure: show how close the player got (`87% / 13% TO BREAK`), never "FAILED" or "GAME OVER".
+- Progress is additive and persistent.
 
 ## Architecture
 
 - Use TypeScript in strict mode and Vite. Keep source code out of `index.html`.
-- Organize responsibilities under `src/` into `scenes`, `systems`, `entities`, `ui`, `data`, `save`, `effects`, and `assets` as appropriate.
-- Define content (items, rocks, areas, upgrades) as typed data rather than scattering balance constants through scenes.
+- Phaser 4. Organize `src/` into `scenes`, `systems`, `entities`, `ui`, `data`, `config`, `save`, `effects`, `audio`, `utils`. Systems stay Phaser-free so `node --test` can cover them.
+- Balance lives in `src/config/tuning.ts` and `src/data/`; presentation timing in `src/config/feel.ts`. Do not scatter constants through scenes.
 - Systems own game rules; scenes orchestrate; UI renders state and emits intent.
 - Keep save migrations/versioning explicit. New save fields must have safe defaults so old saves continue to load.
-- Design inventory entries so duplicate discoveries can later be converted into permanent CORE resources without rewriting collection storage.
 
 ## Interaction and visual direction
 
-- Target portrait mobile screens first, with touch targets at least 44 CSS pixels where practical.
-- Use earthy, material colors and restrained effects: stone, sand, soil, wood, leather, bone, old paper, and dull metal.
-- Avoid neon/SF styling, gratuitous glow, excessive gradients, and decorative clutter.
-- Mining feedback should feel weighty and short-lived: impact motion, brief hit-stop, chips, dust, restrained shake, and sound/haptics where supported.
-- Dropped finds must visibly eject, fall, bounce briefly, and settle. They remain tappable; they must never move forever.
-- Keep HOME, UPGRADES, and COLLECTION as distinct views behind a persistent bottom navigation.
-- Accessibility and legibility beat ornament. Respect reduced-motion preferences and safe-area insets.
+- Portrait mobile first (9:16 base, taller phones extend the space between HUD and field). Touch targets at least 44 CSS px.
+- Use the supplied pixel-art sprites (cut from `art/source` by `tools/extract-assets.py`); modern, readable UI that does not overpower the game view. No constant neon glow.
+- Impacts: brief hit-stop, debris cut from the wall art, restrained shake. Debris lives 0.3–0.8 s and is pooled.
+- One gameplay scene; results, special picks and settings are overlays. Never block the flow with long animations (>1 s).
+- Shake, flash, vibration and volumes are user-adjustable and never carry required information.
 
 ## Quality bar
 

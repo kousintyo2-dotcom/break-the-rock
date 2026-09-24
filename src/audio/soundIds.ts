@@ -1,0 +1,17 @@
+export type SoundId =
+  | 'launch'
+  | 'breakWood'
+  | 'breakBrick'
+  | 'breakIron'
+  | 'breakGold'
+  | 'breakBoost'
+  | 'critical'
+  | 'stopWood'
+  | 'stopBrick'
+  | 'stopIron'
+  | 'newBest'
+  | 'rushStart'
+  | 'buy'
+  | 'denied'
+  | 'tap'
+  | 'pick';

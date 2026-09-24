@@ -1,46 +1,51 @@
-# BREAK THE ROCK
+# BREAK THROUGH
 
-スマートフォン向けの収集型インクリメンタル発掘ゲーム。岩を砕き、画面上へ落ちた発見物を自分の手で回収し、調査道具とコレクションを育てます。
+スマートフォン縦画面向けの短編インクリメンタル破壊ゲーム（Phaser 4 + TypeScript + Vite）。
+BREAK を押すと BREAK CORE が壁を連続でぶち抜き、止まった壁の「あと何%」を見て強化し、もう一度突破する。
+
+現在は **PHASE 1**（WALL 1〜20、倉庫→工場）を実装。
 
 ## Play loop
 
-1. **HOME** で岩をタップ（または「岩を叩く」）
-2. 物理的に飛び出して静止した発見物をタップして回収
-3. **コレクション** で発見記録を確認
-4. 獲得した調査資金を **強化** で道具へ投資
+1. **BREAK** — CORE が右へ発射され、自動で壁を連続破壊
+2. POWER が尽きると壁に食い込んで停止（`WALL 7 / 67% / 33% TO BREAK`）
+3. 結果パネルで SCRAP を使い POWER / MOMENTUM / LUCK を強化（EST. 突破予測が伸びる）
+4. **BREAK AGAIN** — さっき止められた壁を突破する
 
-進行状況はブラウザの LocalStorage に自動保存されます。
+BEST 5 / 10 / 15 / 20 到達で特殊強化3択。10連続突破で BREAK RUSH。
 
 ## Development
 
 ```bash
 npm install
-npm run dev
-```
-
-品質チェック:
-
-```bash
+npm run dev        # http://localhost:5173/break-the-rock/
 npm run typecheck
 npm test
 npm run build
+node --experimental-strip-types tools/simulate-progress.ts   # 序盤10分のバランス確認
 ```
 
-## Architecture
+`?reset` を URL に付けるとセーブを消去して起動（設定画面にも RESET SAVE あり）。
 
-- `src/data`: 型付きコンテンツとバランス値
-- `src/scenes`: HOME・強化・コレクションの独立画面
-- `src/systems`: ゲームルールと状態遷移
-- `src/entities`: ドロップ品などのゲームオブジェクト
-- `src/effects`: 音・パーティクルなど短命な演出
-- `src/save`: バージョン付き永続化スキーマ
-- `src/ui`: アプリシェルと共通UI
-- `src/assets`: スタイルと将来の素材置き場
+## Structure
 
-Canvas ベースの軽量な自前ランタイムを採用しています。現在の縦切り版では Phaser のシーン・物理・アセットパイプラインが不要な規模であり、モバイルでの初期転送量と長期的なフレームワーク依存を抑えるためです。ルール、データ、描画は分離しており、規模が拡大した際には描画層のみ Phaser へ移行できます。
+- `src/config/tuning.ts` — 壁以外のバランス値（POWER/MOMENTUM/LUCK 成長、価格、RUSH 条件、クリティカル、特殊壁・特殊強化の効果量）
+- `src/config/feel.ts` — 演出速度・カメラ・ヒットストップ・画面揺れ・レイアウト
+- `src/data/` — 壁コース（耐久・報酬・特殊壁配置）、素材ごとの破片/音、特殊強化、アセット定義
+- `src/systems/` — ルール（純粋関数）：ステータス計算、RUN の事前シミュレーション、強化、進行
+- `src/save/` — バージョン付きセーブと検証/デフォルト補完
+- `src/scenes/` — `BootScene`（読み込み・破片フレーム生成）、`GameScene`（唯一のゲームシーン、RUN の再生）
+- `src/entities/`, `src/effects/`, `src/ui/`, `src/audio/` — 表示・演出・UI・WebAudio 合成 SE
 
-今回の採掘演出は、描画専用の `RockRenderer` と短命なエンティティ／エフェクトへ分離しています。現在必要なオブジェクト数ではブラウザ標準 Canvas の単一描画ループが十分軽く、Phaser へ全面移行するコストよりも小さいため、独自 Canvas を継続しています。将来、複数レイヤーのマップ、スプライトアニメーション、数百単位の物理オブジェクトが必要になった時点を再評価基準とします。
+`GameScene` は RUN 結果を `simulateRun` で先に確定し、それを演出として再生するだけ。ルールはテスト可能な純粋関数に閉じている。
+
+## Assets
+
+`art/source/` に支給スプライトシート原本、`tools/extract-assets.py` でマゼンタ透過・切り出しを行い `public/assets/` に出力。
+PHASE 1 未使用素材（CORE 第3/4形態、特殊壁、THE WALL、研究施設/異常領域背景）も切り出し済み。
+
+> 旧プロトタイプ「BREAK THE ROCK」のファイル（`src/scenes/HomeScene.ts` 等と旧テスト）は現在未使用。削除は別途判断。
 
 ## GitHub Pages
 
-`main` への push で `.github/workflows/deploy-pages.yml` がテストとビルドを実行し、`dist` を GitHub Pages へ公開します。リポジトリの **Settings → Pages → Source** は **GitHub Actions** を選択してください。
+`main` への push で `.github/workflows/deploy-pages.yml` がテストとビルドを実行し `dist` を公開（`base: /break-the-rock/`）。
