@@ -5,6 +5,8 @@ BREAK を押すと BREAK CORE が壁を連続でぶち抜き、止まった壁�
 
 現在は **PHASE 1**（WALL 1〜20、倉庫→工場）を実装。
 
+**▶ プレイ:** https://kousintyo2-dotcom.github.io/break-the-rock/ （`main` にマージ後、GitHub Pages に自動公開）
+
 ## Play loop
 
 1. **BREAK** — CORE が右へ発射され、自動で壁を連続破壊
@@ -43,8 +45,6 @@ node --experimental-strip-types tools/simulate-progress.ts   # 序盤10分のバ
 
 `art/source/` に支給スプライトシート原本、`tools/extract-assets.py` でマゼンタ透過・切り出しを行い `public/assets/` に出力。
 PHASE 1 未使用素材（CORE 第3/4形態、特殊壁、THE WALL、研究施設/異常領域背景）も切り出し済み。
-
-> 旧プロトタイプ「BREAK THE ROCK」のファイル（`src/scenes/HomeScene.ts` 等と旧テスト）は現在未使用。削除は別途判断。
 
 ## GitHub Pages
 
